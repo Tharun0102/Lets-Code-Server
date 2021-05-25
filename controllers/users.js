@@ -11,21 +11,24 @@ const getUserDetails = async (req, res, err) => {
   }
 }
 
-const getUserFiles = async (req, res, err) => {
+const getUserProjects = async (req, res, err) => {
+  const userId = req.params.userId;
   try {
-    const fileList = await User.find();
-    console.log(fileList);
-    res.status(200).send(fileList);
-  } catch (error) {
-    console.error(error);
-    res.status(404);
+    User.findOne({ username: userId })
+      .populate('projects')
+      .then((user) => {
+        res.status(200).send(user.projects);
+      })
+      .catch(err => {
+        res.status(200).send(err);
+      })
+  } catch (err) {
+    res.status(200).send(err);
   }
-
 }
 
 const createUser = async (req, res) => {
   const user = req.body;
-  console.log("req ", req.body);
   const newUser = new User(user);
   try {
     await newUser.save();
@@ -36,6 +39,6 @@ const createUser = async (req, res) => {
   }
 }
 
-exports.getUserFiles = getUserFiles;
+exports.getUserProjects = getUserProjects;
 exports.createUser = createUser;
 exports.getUserDetails = getUserDetails;

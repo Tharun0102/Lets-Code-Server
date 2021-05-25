@@ -3,13 +3,18 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { userRoutes } = require('./routes/users');
 const cors = require('cors');
+const { projectRoutes } = require('./routes/projects');
+const { fileRoutes } = require('./routes/files');
 
 const app = express();
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
-app.use('/users/', userRoutes);
+app.use('/users', userRoutes);
+app.use('/users', projectRoutes);
+app.use('/users', fileRoutes);
 
 
 //database

@@ -4,7 +4,7 @@ const userControllers = require('../controllers/users');
 
 router.get('/:userId', userControllers.getUserDetails);
 
-router.get('/files', userControllers.getUserFiles);
+router.get('/:userId/projects', userControllers.getUserProjects);
 
 router.post('/new', userControllers.createUser);
 

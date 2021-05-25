@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 
-const fileSchema = mongoose.Schema({
-  name: String,
-  body: String
+const schema = mongoose.Schema;
+
+const fileSchema = new schema({
+  name: { type: String, required: true },
+  content: { type: String }
 });
 
-export const File = mongoose.model('File', fileSchema);
-
+const File = new mongoose.model('File', fileSchema);
+exports.File = File;
