@@ -15,11 +15,11 @@ const createProject = async (req, res) => {
   try {
     const project = new Project({
       name: req.body.name,
-      username: req.body.username
+      username: req.body.email
     });
     project.save()
       .then(() => {
-        User.findOne({ username: project.username })
+        User.findOne({ email: project.username })
           .then((user) => {
             if (user) {
               console.log(user);
@@ -46,7 +46,7 @@ const deleteProject = async (req, res) => {
     console.log(userId, projectId);
     const project = await Project.findOne({ username: userId, name: projectId });
     console.log("project: ", project);
-    const user = await User.findOne({ username: userId });
+    const user = await User.findOne({ email: userId });
     console.log("user: ", user);
     const index = user.projects.indexOf(project);
     user.projects.splice(index, 1);

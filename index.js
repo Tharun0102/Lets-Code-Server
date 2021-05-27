@@ -13,8 +13,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use('/users', userRoutes);
-app.use('/users', projectRoutes);
-app.use('/users', fileRoutes);
+app.use('/:userId/projects', projectRoutes);
+app.use('/:userId/:projectId', fileRoutes);
 
 
 //database

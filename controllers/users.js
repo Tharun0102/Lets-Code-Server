@@ -1,44 +1,39 @@
 const { User } = require("../models/user");
 
-const getUserDetails = async (req, res, err) => {
-  console.log("userDetails", req.params.userId);
+const getUser = async (req, res) => {
   try {
-    const userDetails = await User.findOne({ "username": req.params.userId });
-
-    res.status(200).json(userDetails);
+    const userDetails = await User.findOne(req.query);
+    res.status(200).send(userDetails);
   } catch (error) {
-    res.send(500).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 }
 
-const getUserProjects = async (req, res, err) => {
-  const userId = req.params.userId;
+const getUserProjects = async (req, res) => {
+  console.log(req.query);
   try {
-    User.findOne({ username: userId })
-      .populate('projects')
-      .then((user) => {
-        res.status(200).send(user.projects);
-      })
-      .catch(err => {
-        res.status(200).send(err);
-      })
+    const user = await User.findOne({ "_id": req.query.id });
+    await user.populate('projects');
+    console.log("user", user);
+    res.status(200).send(user.projects);
   } catch (err) {
-    res.status(200).send(err);
+    res.status(404).send(err);
   }
 }
 
 const createUser = async (req, res) => {
   const user = req.body;
+  console.log(user);
   const newUser = new User(user);
   try {
     await newUser.save();
-    res.status(201).json(newUser);
+    res.status(201).send(newUser);
     console.log("created!");
   } catch (error) {
-    res.send(409).json({ message: error.message });
+    res.status(409).send({ message: error.message });
   }
 }
 
-exports.getUserProjects = getUserProjects;
+exports.getUser = getUser;
 exports.createUser = createUser;
-exports.getUserDetails = getUserDetails;
+exports.getUserProjects = getUserProjects;
