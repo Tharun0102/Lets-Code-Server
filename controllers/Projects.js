@@ -2,28 +2,37 @@ const { Project } = require("../models/Project");
 const { User } = require("../models/user");
 
 const getProjectFiles = async (req, res) => {
-  const { userId, projectId } = req.params;
+  const { name, userId } = req.query;
   try {
-    const project = await Project.findOne({ username: userId, name: projectId });
+    const project = await Project.findOne({
+      name,
+      userId
+    });
     res.status(201).send(project.files);
   } catch (error) {
     res.status(500).send(error);
   }
 }
 
+
 const createProject = async (req, res) => {
+  console.log("createProject");
+  console.log(req.body);
+  const { name, userId, type, isFav } = req.body;
   try {
     const project = new Project({
-      name: req.body.name,
-      username: req.body.email
+      name,
+      userId,
+      type,
+      isFav
     });
     project.save()
       .then(() => {
-        User.findOne({ email: project.username })
+        User.findOne({ _id: userId })
           .then((user) => {
             if (user) {
-              console.log(user);
               user.projects.push(project);
+              console.log(user);
               user.save()
                 .then(() => res.send(project))
                 .catch(err => res.status(500).send("cannot create!"))
@@ -40,17 +49,16 @@ const createProject = async (req, res) => {
 }
 
 const deleteProject = async (req, res) => {
-  console.log(req.params);
-  const { userId, projectId } = req.params;
+  console.log(req.query);
+  const { id, projectId } = req.query;
   try {
-    console.log(userId, projectId);
-    const project = await Project.findOne({ username: userId, name: projectId });
-    console.log("project: ", project);
-    const user = await User.findOne({ email: userId });
-    console.log("user: ", user);
-    const index = user.projects.indexOf(project);
-    user.projects.splice(index, 1);
+    const project = await Project.findOne({
+      _id: projectId
+    });
+    const user = await User.findOne({ _id: id });
+    user.projects = user.projects.filter(p => p != projectId);
     await user.save();
+    console.log(user, project);
     await Project.deleteOne(project);
     res.status(202).send(project);
   } catch (error) {

@@ -13,8 +13,9 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use('/users', userRoutes);
-app.use('/:userId/projects', projectRoutes);
-app.use('/:userId/:projectId', fileRoutes);
+app.use('/users/:userId/projects', projectRoutes);
+app.use('/users/:userId/:projectId', fileRoutes);
+
 
 
 //database

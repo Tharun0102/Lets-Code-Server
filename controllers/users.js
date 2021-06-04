@@ -1,6 +1,11 @@
 const { User } = require("../models/user");
+const { Project } = require("../models/Project");;
 
 const getUser = async (req, res) => {
+  if (!req.query) {
+    res.send(400).send('error!')
+  }
+  console.log(req.query);
   try {
     const userDetails = await User.findOne(req.query);
     res.status(200).send(userDetails);
@@ -10,20 +15,31 @@ const getUser = async (req, res) => {
 }
 
 const getUserProjects = async (req, res) => {
-  console.log(req.query);
   try {
     const user = await User.findOne({ "_id": req.query.id });
     await user.populate('projects');
-    console.log("user", user);
-    res.status(200).send(user.projects);
+    const projects = user.projects;
+    const response = await Promise.all(projects.map(async (id) => {
+      const project = await findProjectById(id);
+      return project;
+    }))
+    res.status(200).send(response);
   } catch (err) {
     res.status(404).send(err);
   }
 }
 
+const findProjectById = async (projectId) => {
+  try {
+    const project = await Project.findOne({ _id: projectId });
+    return project;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 const createUser = async (req, res) => {
   const user = req.body;
-  console.log(user);
   const newUser = new User(user);
   try {
     await newUser.save();
