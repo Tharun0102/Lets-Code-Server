@@ -14,7 +14,7 @@ app.use(cors());
 
 app.use('/users', userRoutes);
 app.use('/users/:userId/projects', projectRoutes);
-app.use('/users/:userId/:projectId', fileRoutes);
+app.use('/users/:userId/projects/:projectId', fileRoutes);
 
 
 

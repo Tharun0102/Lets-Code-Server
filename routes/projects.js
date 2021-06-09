@@ -4,7 +4,7 @@ const projectControllers = require('../controllers/Projects');
 
 router.get('/:projectId/files', projectControllers.getProjectFiles);
 
-// router.get('/:projectId', projectControllers.findProjectById);
+router.patch('/:projectId/toggleFav', projectControllers.toggleFavourite);
 
 router.post('/new', projectControllers.createProject);
 

@@ -2,11 +2,10 @@ const { Project } = require("../models/Project");
 const { User } = require("../models/user");
 
 const getProjectFiles = async (req, res) => {
-  const { name, userId } = req.query;
+  const { _id } = req.query;
   try {
     const project = await Project.findOne({
-      name,
-      userId
+      _id
     });
     res.status(201).send(project.files);
   } catch (error) {
@@ -48,6 +47,22 @@ const createProject = async (req, res) => {
   }
 }
 
+const toggleFavourite = async (req, res) => {
+  console.log("toggle", req.body);
+  const { projectId } = req.body;
+  try {
+    const project = await Project.findOne({
+      _id: projectId
+    });
+    project.isFav = !project.isFav;
+    project.save();
+    res.status(202).send(project);
+  } catch (error) {
+    console.log(error);
+    res.status(404).send(error);
+  }
+}
+
 const deleteProject = async (req, res) => {
   console.log(req.query);
   const { id, projectId } = req.query;
@@ -70,3 +85,4 @@ const deleteProject = async (req, res) => {
 exports.getProjectFiles = getProjectFiles;
 exports.createProject = createProject;
 exports.deleteProject = deleteProject;
+exports.toggleFavourite = toggleFavourite;

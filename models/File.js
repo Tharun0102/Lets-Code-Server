@@ -4,7 +4,7 @@ const schema = mongoose.Schema;
 
 const fileSchema = new schema({
   name: { type: String, required: true },
-  content: { type: String }
+  body: { type: String, required: true }
 });
 
 const File = new mongoose.model('File', fileSchema);
