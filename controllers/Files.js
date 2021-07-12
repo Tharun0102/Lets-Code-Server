@@ -1,18 +1,19 @@
 const { Project } = require("../models/Project");
 const { File } = require("../models/File");
-const { get } = require("mongoose");
 
 // creates a file
 const createFile = async (req, res) => {
   console.log("file", req.body);
   const { id, projectId } = req.body;
   try {
+    const project = await Project.findOne({ _id: projectId });
+    const code = defaultCode(project.type);
+    console.log(project);
     const file = new File({
       name: req.body.name,
-      body: 'start coding!'
+      body: code
     });
     await file.save();
-    const project = await Project.findOne({ _id: projectId });
     if (project) {
       project.files.push(file);
       await project.save();
@@ -23,6 +24,38 @@ const createFile = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(404).send(error);
+  }
+}
+const updateFile = async (req, res) => {
+  console.log("file", req.body);
+  const { _id, data } = req.body;
+  try {
+    const file = await File.findOne({ _id: _id });
+    console.log("file updated", file);
+    file.body = data;
+    await file.save();
+    res.status(200).send(file);
+  } catch (error) {
+    console.log(error);
+    res.status(404).send(error);
+  }
+}
+
+// default code
+const defaultCode = (type) => {
+  switch (type) {
+    case "C":
+      return `#include<stdio.h>\nint main(){\n    printf("Hello World!");\n}`
+    case "C++":
+      return `#include<iostream>\nusing namespace std;\nint main(){\n    cout<<"Hello World!";\n}`
+    case "Java":
+      return `class Main{\n    public static void main(String[] args){\n        System.out.println("Hello World!");\n    }\n}`
+    case "JavaScript":
+      return `console.log("Hello World")`;
+    case "Python":
+      return `print("Hello World")`
+    default:
+      return ""
   }
 }
 
@@ -56,3 +89,4 @@ const deleteFile = async (req, res) => {
 exports.createFile = createFile;
 exports.deleteFile = deleteFile;
 exports.getFile = getFile;
+exports.updateFile = updateFile;

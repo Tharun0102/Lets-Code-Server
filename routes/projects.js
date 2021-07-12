@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const projectControllers = require('../controllers/Projects');
 
+router.get('/:projectId', projectControllers.getProjectById);
+
 router.get('/:projectId/files', projectControllers.getProjectFiles);
 
 router.patch('/:projectId/toggleFav', projectControllers.toggleFavourite);

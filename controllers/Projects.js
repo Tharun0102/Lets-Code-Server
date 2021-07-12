@@ -1,13 +1,27 @@
 const { Project } = require("../models/Project");
 const { User } = require("../models/user");
+const { File } = require("../models/File");
 
 const getProjectFiles = async (req, res) => {
-  const { _id } = req.query;
+  const { projectId } = req.query;
   try {
     const project = await Project.findOne({
-      _id
+      _id: projectId
     });
     res.status(201).send(project.files);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
+
+const getProjectById = async (req, res) => {
+  const { projectId } = req.query;
+  try {
+    const project = await Project.findOne({
+      _id: projectId
+    });
+    console.log(project);
+    res.status(200).send(project);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -74,6 +88,11 @@ const deleteProject = async (req, res) => {
     user.projects = user.projects.filter(p => p != projectId);
     await user.save();
     console.log(user, project);
+    project.files.forEach(async (file) => {
+      const currFile = await File.findOne({ _id: file });
+      await File.deleteOne(currFile);
+    })
+
     await Project.deleteOne(project);
     res.status(202).send(project);
   } catch (error) {
@@ -83,6 +102,7 @@ const deleteProject = async (req, res) => {
 }
 
 exports.getProjectFiles = getProjectFiles;
+exports.getProjectById = getProjectById;
 exports.createProject = createProject;
 exports.deleteProject = deleteProject;
 exports.toggleFavourite = toggleFavourite;
