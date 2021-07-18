@@ -5,7 +5,6 @@ const getUser = async (req, res) => {
   if (!req.query) {
     res.send(400).send('error!')
   }
-  console.log(req.query);
   try {
     const userDetails = await User.findOne(req.query);
     res.status(200).send(userDetails);
@@ -44,7 +43,6 @@ const createUser = async (req, res) => {
   try {
     await newUser.save();
     res.status(201).send(newUser);
-    console.log("created!");
   } catch (error) {
     res.status(409).send({ message: error.message });
   }

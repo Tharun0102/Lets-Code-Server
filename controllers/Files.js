@@ -3,15 +3,14 @@ const { File } = require("../models/File");
 
 // creates a file
 const createFile = async (req, res) => {
-  console.log("file", req.body);
-  const { id, projectId } = req.body;
+  const { projectId, type } = req.body;
   try {
     const project = await Project.findOne({ _id: projectId });
     const code = defaultCode(project.type);
-    console.log(project);
     const file = new File({
-      name: req.body.name,
-      body: code
+      name: req.body.name + "." + convert[type],
+      body: code,
+      type: convert[type]
     });
     await file.save();
     if (project) {
@@ -26,12 +25,17 @@ const createFile = async (req, res) => {
     res.status(404).send(error);
   }
 }
+const convert = {
+  "C": 'c',
+  "C++": "cpp",
+  "Java": 'java',
+  "Javascript": 'js',
+  "Python": 'py'
+}
 const updateFile = async (req, res) => {
-  console.log("file", req.body);
   const { _id, data } = req.body;
   try {
     const file = await File.findOne({ _id: _id });
-    console.log("file updated", file);
     file.body = data;
     await file.save();
     res.status(200).send(file);
@@ -75,7 +79,6 @@ const deleteFile = async (req, res) => {
   try {
     const file = await File.findOne({ _id: fileId }).catch(err => console.log("file err"));
     const project = await Project.findOne({ _id: projectId }).catch(err => console.log("project err"));
-    console.log(file, project);
     const index = project.files.indexOf(fileId);
     project.files.splice(index, 1);
     await project.save();

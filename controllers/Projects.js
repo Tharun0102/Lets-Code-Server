@@ -20,7 +20,6 @@ const getProjectById = async (req, res) => {
     const project = await Project.findOne({
       _id: projectId
     });
-    console.log(project);
     res.status(200).send(project);
   } catch (error) {
     res.status(500).send(error);
@@ -29,8 +28,6 @@ const getProjectById = async (req, res) => {
 
 
 const createProject = async (req, res) => {
-  console.log("createProject");
-  console.log(req.body);
   const { name, userId, type, isFav } = req.body;
   try {
     const project = new Project({
@@ -45,7 +42,6 @@ const createProject = async (req, res) => {
           .then((user) => {
             if (user) {
               user.projects.push(project);
-              console.log(user);
               user.save()
                 .then(() => res.send(project))
                 .catch(err => res.status(500).send("cannot create!"))
@@ -62,7 +58,6 @@ const createProject = async (req, res) => {
 }
 
 const toggleFavourite = async (req, res) => {
-  console.log("toggle", req.body);
   const { projectId } = req.body;
   try {
     const project = await Project.findOne({
@@ -78,7 +73,6 @@ const toggleFavourite = async (req, res) => {
 }
 
 const deleteProject = async (req, res) => {
-  console.log(req.query);
   const { id, projectId } = req.query;
   try {
     const project = await Project.findOne({
@@ -87,7 +81,6 @@ const deleteProject = async (req, res) => {
     const user = await User.findOne({ _id: id });
     user.projects = user.projects.filter(p => p != projectId);
     await user.save();
-    console.log(user, project);
     project.files.forEach(async (file) => {
       const currFile = await File.findOne({ _id: file });
       await File.deleteOne(currFile);
