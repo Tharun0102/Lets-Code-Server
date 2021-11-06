@@ -1,13 +1,41 @@
 const { User } = require("../models/user");
-const { Project } = require("../models/Project");;
+const { Project } = require("../models/Project");
+const { scryptSync, randomBytes, timingSafeEqual } = require('crypto');
+
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    res.status(400).send("invalid credentials!");
+  }
+  const user = await User.findOne({ email });
+  if (!user) {
+    res.status(404).send("user not found!");
+  }
+  const [salt, key] = user.password.split(':');
+  const hashedBuffer = scryptSync(password, salt, 64);
+
+  const keyBuffer = Buffer.from(key, 'base64');
+  const match = timingSafeEqual(hashedBuffer, keyBuffer);
+
+  if (match) {
+    res.status(200).send(user);
+  } else {
+    res.status(404).send("user not found!");
+  }
+}
+
 
 const getUser = async (req, res) => {
-  if (!req.query) {
-    res.send(400).send('error!')
+  if (!req?.body?.email) {
+    res.status(400).send('error!')
   }
+  const { name, email, password } = req.body;
   try {
-    const userDetails = await User.findOne(req.query);
-    res.status(200).send(userDetails);
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(500).send("incorrect credentials");
+    }
+    res.status(200).send(user);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
@@ -38,16 +66,23 @@ const findProjectById = async (projectId) => {
 }
 
 const createUser = async (req, res) => {
-  const user = req.body;
-  const newUser = new User(user);
+  const { name, email, password } = req.body;
+  const hasUser = await User.findOne({ email });
+  if (hasUser) {
+    res.status(400).send("user already exists")
+  }
+  const salt = randomBytes(16).toString('base64');
+  const hashedPassword = scryptSync(password, salt, 64).toString('base64');
+  const newUser = new User({ name, email, password: `${salt}:${hashedPassword}` });
   try {
     await newUser.save();
     res.status(201).send(newUser);
   } catch (error) {
-    res.status(409).send({ message: error.message });
+    res.status(500).send("error!");
   }
 }
 
+exports.login = login;
 exports.getUser = getUser;
 exports.createUser = createUser;
 exports.getUserProjects = getUserProjects;
