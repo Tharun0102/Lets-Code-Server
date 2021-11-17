@@ -12,7 +12,9 @@ dotenv.config();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '30mb', extended: 'true' }));
-app.use(cors());
+app.use(cors({
+  origin: '*'
+}));
 
 app.use('/users', userRoutes);
 app.use('/users/:userId/projects', projectRoutes);
