@@ -10,17 +10,18 @@ const login = async (req, res) => {
   const user = await User.findOne({ email });
   if (!user) {
     res.status(404).send("user not found!");
-  }
-  const [salt, key] = user.password.split(':');
-  const hashedBuffer = scryptSync(password, salt, 64);
-
-  const keyBuffer = Buffer.from(key, 'base64');
-  const match = timingSafeEqual(hashedBuffer, keyBuffer);
-
-  if (match) {
-    res.status(200).send(user);
   } else {
-    res.status(404).send("user not found!");
+    const [salt, key] = user.password.split(':');
+    const hashedBuffer = scryptSync(password, salt, 64);
+
+    const keyBuffer = Buffer.from(key, 'base64');
+    const match = timingSafeEqual(hashedBuffer, keyBuffer);
+
+    if (match) {
+      res.status(200).send(user);
+    } else {
+      res.status(404).send("user not found!");
+    }
   }
 }
 
@@ -34,8 +35,9 @@ const getUser = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       res.status(500).send("incorrect credentials");
+    } else {
+      res.status(200).send(user);
     }
-    res.status(200).send(user);
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
@@ -70,15 +72,16 @@ const createUser = async (req, res) => {
   const hasUser = await User.findOne({ email });
   if (hasUser) {
     res.status(400).send("user already exists")
-  }
-  const salt = randomBytes(16).toString('base64');
-  const hashedPassword = scryptSync(password, salt, 64).toString('base64');
-  const newUser = new User({ name, email, password: `${salt}:${hashedPassword}` });
-  try {
-    await newUser.save();
-    res.status(201).send(newUser);
-  } catch (error) {
-    res.status(500).send("error!");
+  } else {
+    const salt = randomBytes(16).toString('base64');
+    const hashedPassword = scryptSync(password, salt, 64).toString('base64');
+    const newUser = new User({ name, email, password: `${salt}:${hashedPassword}` });
+    try {
+      await newUser.save();
+      res.status(201).send(newUser);
+    } catch (error) {
+      res.status(500).send("error!");
+    }
   }
 }
 
