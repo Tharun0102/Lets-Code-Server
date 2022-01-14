@@ -28,6 +28,6 @@ const PORT = process.env.PORT || 5000;
 
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => app.listen(PORT, () => console.log(`server running at port : ${PORT}`)))
-  .catch((err) => console.log(err));
+  .catch((err) => console.error(err));
 
 mongoose.set('useFindAndModify', false);

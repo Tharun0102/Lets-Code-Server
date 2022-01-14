@@ -21,7 +21,7 @@ const createFile = async (req, res) => {
       res.status(500).send(file);
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(404).send(error);
   }
 }
@@ -40,7 +40,7 @@ const updateFile = async (req, res) => {
     await file.save();
     res.status(200).send(file);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(404).send(error);
   }
 }
@@ -69,7 +69,7 @@ const getFile = async (req, res) => {
     const file = await File.findOne({ _id });
     res.status(201).send(file);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(404).send(error);
   }
 }
@@ -77,8 +77,8 @@ const getFile = async (req, res) => {
 const deleteFile = async (req, res) => {
   const { projectId, fileId } = req.body;
   try {
-    const file = await File.findOne({ _id: fileId }).catch(err => console.log("file err"));
-    const project = await Project.findOne({ _id: projectId }).catch(err => console.log("project err"));
+    const file = await File.findOne({ _id: fileId }).catch(err => console.error("file err"));
+    const project = await Project.findOne({ _id: projectId }).catch(err => console.error("project err"));
     const index = project.files.indexOf(fileId);
     project.files.splice(index, 1);
     await project.save();

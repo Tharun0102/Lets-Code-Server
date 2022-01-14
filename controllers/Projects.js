@@ -89,7 +89,7 @@ const deleteProject = async (req, res) => {
     await Project.deleteOne(project);
     res.status(202).send(project);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(404).send(error);
   }
 }
