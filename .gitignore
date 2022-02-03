@@ -1,3 +1,5 @@
-node_modules
 .env
-ProcFile
+
+# dependencies
+/node_modules
+.env.example
