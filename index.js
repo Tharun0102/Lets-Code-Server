@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const { userRoutes } = require('./routes/users');
 const cors = require('cors');
 const { projectRoutes } = require('./routes/projects');
@@ -10,8 +9,8 @@ const dotenv = require('dotenv');
 const app = express();
 dotenv.config();
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json({ limit: '30mb', extended: 'true' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb' }));
 app.use(cors({
   origin: '*'
 }));
