@@ -8,9 +8,9 @@ const createFile = async (req, res) => {
     const project = await Project.findOne({ _id: projectId });
     const code = defaultCode(project.type);
     const file = new File({
-      name: req.body.name + "." + convert[type],
+      name: req.body.name + "." + convert[ type ],
       body: code,
-      type: convert[type]
+      type: convert[ type ]
     });
     await file.save();
     if (project) {
@@ -29,7 +29,7 @@ const convert = {
   "C": 'c',
   "C++": "cpp",
   "Java": 'java',
-  "Javascript": 'js',
+  "JavaScript": 'js',
   "Python": 'py'
 }
 const updateFile = async (req, res) => {
